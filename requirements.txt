@@ -1,7 +1,6 @@
 # SupportIQ Web - Dependencies
 
 # Core
-python>=3.8
 pandas>=2.0
 numpy>=1.24
 

@@ -1,7 +1,0 @@
-issue_type,total_tickets,avg_first_response_min,avg_resolution_min,avg_csat,sla_breach_rate,escalation_rate
-Shipping,1261,30.17,242.68,3.9,0.0,4.36
-Payment,1001,30.32,243.24,3.94,0.0,5.0
-Account,900,30.02,251.14,3.93,0.0,5.22
-Returns,704,30.4,250.15,4.02,0.0,4.83
-Technical,625,31.06,242.34,3.92,0.0,6.88
-Product,509,31.66,250.39,3.99,0.0,4.52
