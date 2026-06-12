@@ -1,0 +1,5 @@
+priority,total_tickets,avg_first_response_min,avg_resolution_min,avg_csat,sla_breach_rate,priority_order
+Critical,218,33.37,249.0,3.92,0.0,1
+High,958,30.82,251.74,3.96,0.0,2
+Medium,2302,30.08,246.93,3.93,0.0,3
+Low,1522,30.42,240.91,3.95,0.0,4

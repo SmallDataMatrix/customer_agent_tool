@@ -1,0 +1,677 @@
+
+项目名称
+SupportIQ Web：面向二手交易平台客服工具的 Decision Science 与 Agent Assist 项目
+项目定位：
+这是一个针对 Vinted-like marketplace support 场景的作品集项目，用公开客服数据集模拟二手交易平台中的 member support 问题，包括发货、退款、支付、账号、退货、商品争议、验证、技术问题等。
+项目目标不是做一个炫技 chatbot，而是展示你能作为 Decision Scientist 支持 Support Agent Tooling 团队：
+定义客服效率与体验指标。
+发现 agent workflow bottleneck。
+用 SQL / Python 构建可复现分析流程。
+用统计建模解释 resolution time、CSAT、priority、routing 等问题。
+设计 A/B test 验证工具改动价值。
+用前端网页向 Product、Engineering、Support Ops、Analytics Engineering stakeholders 清晰展示结论。
+扩展一个 2024 年以后主流的 AI agent assist / copilot 方案，但保留 human-in-the-loop 和风险控制。
+一、公开数据集选择
+建议使用 4 个公开数据源，分别服务于不同项目模块。
+Kaggle Customer Support Ticket Dataset 客服工单基础分析：ticket type、channel、status、customer satisfaction、customer/product 信息 适合做客服健康度 dashboard、CSAT、ticket status、channel 影响分析。该数据集说明中包含 customer、product、ticket type、ticket channel、ticket status 等客服分析字段。
+
+项目 README 中要明确写：
+This is a Vinted-like support analytics case study using public datasets. It does not use or claim access to Vinted internal data.
+这句话很重要。它体现你对数据边界、业务真实性和隐私合规的理解。
+二、最终展示形式：前端网页，而不是 notebook
+推荐技术栈
+最稳妥的实现方式：
+Frontend: React + TypeScript + Vite Tailwind CSS Recharts 或 Apache ECharts TanStack Table React Router Zustand 或普通 React state Data processing: Python scripts DuckDB SQL pandas / numpy / scipy / statsmodels / scikit-learn Deployment: GitHub Pages / Netlify / Vercel LLM demo: 默认使用 mock mode + 预生成 responses 可选 serverless API，用于 live LLM 调用 
+为什么这样设计：
+React 前端网页比 notebook 更适合面试展示。你可以像展示真实内部 tooling 一样讲业务流程。
+Python / SQL 脚本保证分析可复现。这仍然覆盖 JD 中 SQL、Python、统计建模、可维护 analytical workflow 的要求。
+静态 JSON 数据让部署简单。前端直接读取预计算结果，不需要复杂后端。
+LLM demo 默认 mock mode。避免 API key、成本和不稳定性问题，面试时也更可控。
+三、项目代码结构
+建议结构如下：
+supportiq-web/ README.md metrics_dictionary.md experiment_plan.md decision_memo.md data/ raw/ processed/ frontend/ sql/ 01_clean_tickets.sql 02_standardize_issue_taxonomy.sql 03_ticket_metrics.sql 04_workflow_steps.sql 05_experiment_base_table.sql scripts/ 01_download_data.py 02_clean_and_mask_pii.py 03_build_duckdb.py 04_compute_metrics.py 05_train_routing_models.py 06_run_regression_models.py 07_build_ab_test_scenarios.py 08_build_llm_demo_assets.py 09_export_frontend_json.py models/ queue_classifier.joblib priority_classifier.joblib vectorizer.joblib model_metrics.json frontend/ package.json vite.config.ts src/ main.tsx App.tsx routes/ LandingPage.tsx ExecutiveOverview.tsx MetricFramework.tsx BottleneckExplorer.tsx WorkflowExplorer.tsx RegressionInsights.tsx RoutingModelLab.tsx ExperimentLab.tsx AgentCopilotDemo.tsx QualityMonitor.tsx DecisionMemo.tsx Limitations.tsx components/ KpiCard.tsx FilterBar.tsx SegmentHeatmap.tsx ParetoChart.tsx WaterfallChart.tsx TicketDrawer.tsx ConfusionMatrix.tsx ExperimentSimulator.tsx AgentInbox.tsx RagSourcePanel.tsx DraftReplyEditor.tsx QualityChecklist.tsx data/ executive_kpis.json metric_dictionary.json bottleneck_segments.json workflow_steps.json regression_results.json routing_model_eval.json experiment_scenarios.json ticket_samples.json agent_demo_tickets.json rag_sources.json llm_quality_eval.json 
+运行方式：
+python scripts/01_download_data.py python scripts/02_clean_and_mask_pii.py python scripts/03_build_duckdb.py python scripts/04_compute_metrics.py python scripts/05_train_routing_models.py python scripts/06_run_regression_models.py python scripts/07_build_ab_test_scenarios.py python scripts/08_build_llm_demo_assets.py python scripts/09_export_frontend_json.py cd frontend npm install npm run dev 
+最终交付是一个网页：
+https://your-username.github.io/supportiq-web/ 
+四、项目整体业务叙事
+你要把项目包装成一个真实的 product analytics / decision science case：
+Support Agent Tooling directly affects member experience and support efficiency. For a marketplace, shipping, payment, refund, account access, returns, and disputes are operationally complex. Better tooling should help agents resolve issues faster, reduce repeat contacts, improve routing consistency, and surface quality signals for Product and Operations.
+中文理解：
+一个二手交易平台的客服系统不只是“回答用户问题”。它直接影响：
+买家是否信任平台。
+卖家是否愿意继续交易。
+支付、退款、物流争议是否被及时处理。
+客服 agent 是否能高效、一致、合规地解决问题。
+Product / Operations 是否能从客服信号中发现产品缺陷和流程问题。
+这个项目的核心假设是：
+好的 agent tooling 不应只追求更快关闭工单，而应在效率、质量、风险和 member experience 之间做平衡。
+五、第一部分：Decision Science 核心前端项目
+第一部分严格贴合 JD 中的业务需求与技能：metrics framework、SQL、Python、BI、A/B test、regression、causal inference、stakeholder communication、support tooling、workflow improvement。
+Part 1 页面 1：Landing Page / Case Study Overview
+页面目标
+让面试官 30 秒内理解项目是什么、为什么和岗位相关。
+页面内容
+页面标题：
+SupportIQ Web Decision Science for Support Agent Tooling in a Marketplace Support Domain 
+核心说明：
+This project uses public customer support datasets to simulate support agent tooling analytics for a Vinted-like marketplace. It focuses on support efficiency, member experience, ticket routing, workflow bottlenecks, experimentation, and AI-assisted support quality. 
+页面展示 4 个模块入口：
+Support Health Dashboard
+Bottleneck & Workflow Explorer
+Experiment & Routing Lab
+AI Agent Assist & Quality Monitor
+页面指标
+Landing page 不需要复杂指标，只展示业务框架：
+Efficiency Quality Risk Tooling adoption Experiment impact 
+JD 对应
+这一页对应 JD 中的：
+communicating clear recommendations to stakeholders contributing to product and operational decisions maintaining a strong member focus 
+Part 1 页面 2：Metric Framework / KR Builder
+页面目标
+展示你能为 Support Agent Tooling 团队定义指标体系和 team Key Results。
+指标框架
+指标分 5 层。
+1. Volume metrics
+ticket_volume ticket_volume_by_issue_group ticket_volume_by_channel ticket_volume_by_priority 
+目的：理解客服压力来自哪里。
+2. Efficiency metrics
+first_response_minutes_p50 first_response_minutes_p75 resolution_minutes_p50 resolution_minutes_p75 resolution_minutes_p90 tickets_solved_per_agent_day_proxy workflow_step_seconds queue_handoff_count 
+目的：衡量 agent 是否能更快解决问题。
+3. Member experience metrics
+csat_avg low_csat_rate repeat_contact_7d_proxy reopen_proxy negative_feedback_rate 
+目的：防止只优化速度、牺牲用户体验。
+4. Risk / guardrail metrics
+critical_sla_breach_rate high_risk_false_safe_rate escalation_miss_proxy payment_or_refund_error_proxy pii_leakage_rate 
+目的：支付、退款、账号、争议类问题不能被错误自动化。
+5. Tooling metrics
+routing_accuracy priority_prediction_recall_critical suggestion_acceptance_rate manual_edit_distance agent_confidence_feedback tool_coverage_rate 
+目的：衡量 agent tooling 是否真的被 agent 使用，并且是否可靠。
+前端交互
+页面做成一个 Metric Dictionary + KR Builder：
+左侧：指标分类树。
+右侧：点击某个指标后展示：
+Metric name Business question Definition SQL logic summary Owner Refresh cadence Known limitations Used in which dashboard Recommended KR target 
+示例：
+Metric: p75 resolution time Business question: Are agents resolving complex support issues faster? Definition: 75th percentile of minutes between ticket creation and ticket resolution, calculated for solved tickets only. Why p75: Resolution time is usually right-skewed. p75 captures long-tail support pain better than average. Guardrail: Do not reduce resolution time at the cost of lower CSAT or higher repeat contact. 
+页面目的
+这是非常贴 JD 的页面，因为岗位明确要求：
+Develop and maintain relevant metrics and frameworks drive the process of setting team Key Results and targets 
+Part 1 页面 3：Executive Overview Dashboard
+页面目标
+模拟 Product Manager / Support Ops 每周会看的 team health dashboard。
+页面筛选器
+date range issue group channel priority language queue 
+页面 KPI cards
+Total tickets Solved rate Median first response time p75 resolution time CSAT Low CSAT rate Repeat contact proxy Critical SLA breach proxy 
+图表
+Ticket volume trend 看客服压力是否上升。
+Resolution time p50 / p75 / p90 trend 看效率是否改善。
+p90 用来发现长尾问题。
+CSAT and low CSAT trend 看 member experience 是否稳定。
+Issue group mix 看哪些问题占比最高。
+Priority distribution 检查 critical / high priority 是否异常增加。
+页面输出
+页面右侧增加一个自动生成的 “Insight Panel”，例如：
+Current risk: Payment / Refund tickets have higher low CSAT rate than the site average. Operational signal: Shipping-related tickets contribute disproportionately to total resolution hours. Decision implication: Prioritize tooling for high-volume, high-delay issue groups before optimizing low-volume categories. 
+JD 对应
+Enable Data-Driven Decisions communicate actionable analytical insights partner with Product and Operations 
+Part 1 页面 4：Bottleneck Explorer
+页面目标
+找出哪些客服问题最值得产品和工具团队优先解决。
+核心思想
+不要只看 ticket volume。真正值得优先做 tooling 的问题通常同时满足：
+高 volume 高 resolution time 高 low CSAT 高 repeat contact 高 agent handoff 
+关键指标
+ticket_volume total_resolution_hours excess_resolution_hours p75_resolution_minutes low_csat_rate repeat_contact_7d_proxy workflow_handoff_rate 
+推荐定义一个实际可解释的 opportunity metric：
+excess_resolution_hours = sum(max(resolution_minutes - target_resolution_minutes_by_priority, 0)) 
+这个比复杂 composite score 更适合面试，因为容易解释。
+前端图表
+1. Pareto chart
+横轴：
+issue_group 
+纵轴：
+total_resolution_hours 
+叠加累计占比。
+目的：
+识别 20% 的 issue group 是否贡献了大部分客服耗时。
+2. Heatmap
+行：
+issue_group 
+列：
+channel 
+颜色：
+low_csat_rate 或 p75_resolution_minutes 
+目的：
+发现具体 segment，例如：
+Payment / Refund + email channel Shipping / Delivery + high priority Returns / Disputes + German language 
+3. Opportunity quadrant
+横轴：
+ticket volume 
+纵轴：
+p75 resolution time 
+气泡大小：
+low CSAT count 
+颜色：
+risk level 
+目的：
+把分析直接转成 prioritization。
+页面输出
+点击某个 segment 后，右侧显示：
+Segment: Shipping / Delivery, High Priority, Email Observed issue: High p75 resolution time and above-average low CSAT. Likely root causes: - Requires carrier status lookup - Needs policy interpretation - Often requires follow-up information - High agent handoff rate Tooling opportunity: - Auto-summary - Carrier-status checklist - Similar resolved tickets - Recommended first reply - Escalation rule if delivery dispute is high risk 
+JD 对应
+continually explore opportunities within prioritised areas support agent workflows surface better feedback for product and operations teams 
+Part 1 页面 5：Workflow Explorer
+页面目标
+用 Mendeley help desk 数据展示 agent workflow 哪些步骤最耗时。
+该数据包含 ticket category、priority、assigned resolver、start time、resolution time 和每个 resolution step 的耗时秒数，适合做 workflow bottleneck 分析。
+页面指标
+seconds_in_step step_share_of_total_resolution_time p75_step_duration step_variance step_rework_rate_proxy assigned_resolver_load_proxy 
+前端图表
+Waterfall chart 展示一个 ticket 从创建到解决，各步骤耗时如何累积。
+Step duration boxplot 比较不同 resolution step 的耗时分布。
+Priority × step heatmap 看 high priority ticket 是否卡在某些步骤。
+Assignee load proxy 看是否存在个别 queue / resolver 过载。
+页面输出
+示例 insight：
+Most delay is concentrated before the first meaningful action, not during final resolution. Implication: The tooling opportunity is likely better triage and first-action recommendation, not only faster closing macros. 
+JD 对应
+building and improving systems, workflows, and analytical foundations support agents resolve member issues efficiently 
+Part 1 页面 6：Regression Insights
+页面目标
+展示你会用统计方法解释业务现象，而不是只做 dashboard。
+这页应该像一个 “model interpretation for stakeholders” 页面，不要像 notebook 输出一堆统计表。
+6.1 Resolution Time Regression
+业务问题
+哪些因素在控制其他变量后，仍然显著影响 resolution time？
+模型
+log(resolution_minutes) ~ issue_group + priority + channel + language + ticket_text_length + created_weekday + queue 
+建议使用：
+statsmodels OLS with robust standard errors 
+或：
+Gamma GLM with log link 
+前端展示
+Coefficient forest plot。
+Segment effect table。
+Plain-English interpretation。
+Model limitation box。
+解释方式
+不要说：
+The model proves payment issues cause long resolution time. 
+应该说：
+After controlling for priority, channel, language, and ticket length, Payment / Refund tickets are still associated with longer resolution time. This suggests that the workflow or tooling for these issues may require further investigation. 
+这体现你对因果边界的理解。
+6.2 Low CSAT Logistic Regression
+业务问题
+哪些因素和低满意度更相关？
+Target
+low_csat = 1 if csat <= 2 else 0 
+模型
+low_csat ~ log(first_response_minutes) + log(resolution_minutes) + issue_group + priority + channel + repeat_contact_proxy 
+前端展示
+Odds ratio chart。
+Marginal effect chart。
+Top 5 low CSAT risk drivers。
+Guardrail recommendation。
+重点解释
+The purpose of this model is not to automate customer satisfaction judgement. It helps prioritize which workflows deserve product and operations attention. 
+JD 对应
+regression analysis inferential techniques analytical thinking communicate to technical and non-technical audiences 
+Part 1 页面 7：Causal Inference Template
+页面目标
+展示你知道什么时候可以做因果推断，什么时候只能做相关性分析。
+公开数据没有真实 Vinted 工具上线实验，所以这里不能伪装成真实因果结论。应设计为：
+Causal Inference Template for Future Tooling Rollout 
+页面设计
+页面上展示一个 quasi-experiment setup：
+Treatment group: Tool-eligible issue groups, such as Shipping / Delivery, Payment / Refund, Returns / Disputes Control group: Non-eligible issue groups or queues not exposed to the tooling Pre period: Before hypothetical rollout Post period: After hypothetical rollout 
+模型
+log_resolution_time ~ treated + post + treated * post + priority + channel + language + queue 
+核心参数：
+treated * post 
+前端展示
+Pre/post trend chart。
+Parallel trends diagnostic。
+Difference-in-differences estimate card。
+“Can we trust this?” checklist。
+Trust checklist
+Were treatment and control trends parallel before rollout? Was treatment assignment exogenous? Did other support process changes happen at the same time? Was ticket mix stable? Were agents shared across groups? 
+这页的价值
+这页能体现你不会滥用 causal inference。你可以在面试中说：
+For the public dataset, I use this as a method template. In a real Vinted setting, I would need actual rollout timing, treatment assignment, agent exposure logs, and ticket-level outcomes before making causal claims.
+这比硬说“我证明了工具有效”更专业。
+Part 1 页面 8：Routing Model Lab
+页面目标
+展示一个实际可行的 Support Agent Tooling 组件：自动推荐 ticket queue 和 priority。
+数据来源主要用 Tobi-Bueck customer support tickets，因为它包含 subject、body、queue、priority、language、answer、type、tags 等字段，适合训练 ticket routing 和 priority prediction。
+8.1 Queue Prediction
+业务目标
+帮助新 ticket 更快进入正确 queue，减少 agent handoff 和等待时间。
+输入
+subject body language ticket type tags 
+输出
+predicted_queue confidence top_3_queues 
+推荐模型
+先用简单、可解释、稳定的 baseline：
+TF-IDF + Logistic Regression 
+不要第一版就用 LLM fine-tuning。原因：
+成本低。
+可复现。
+可解释。
+适合作为 agent tooling 中的高置信推荐。
+面试时更容易讲清楚。
+指标
+accuracy macro_f1 weighted_f1 top_2_accuracy routing_confidence coverage_at_80_confidence misroute_rate 
+前端展示
+Confusion matrix。
+Top confused queues。
+Confidence threshold slider。
+Coverage vs accuracy curve。
+Example ticket viewer。
+关键产品逻辑
+if confidence >= 0.80: show recommended queue else: send to manual triage 
+这个比 100% 自动分流更贴近真实业务。
+8.2 Priority Prediction
+业务目标
+识别高风险工单，防止 critical issue 被低估。
+输入
+subject body queue language tags 
+输出
+predicted_priority risk_level needs_human_review 
+指标
+这里不能只看 accuracy。
+重点指标应该是：
+critical_recall critical_false_negative_rate high_risk_false_safe_rate precision_for_critical calibration_error 
+其中最重要的是：
+high_risk_false_safe_rate 
+定义：
+真正 high-risk / critical 的 ticket 被系统错误判为 low-risk safe ticket 的比例。 
+前端展示
+Critical recall card。
+False negative examples。
+Threshold slider。
+Risk policy panel。
+决策建议
+页面右侧显示：
+Recommendation: Use priority model as an assistive signal, not as an automatic escalation decision. Policy: Payment, refund, account access, safety, fraud, and high-value item disputes should always require human review if model confidence is low or risk keywords are detected. 
+JD 对应
+support agent tooling data-driven decisions member focus statistical methods Python and SQL 
+Part 1 页面 9：Experiment Lab
+页面目标
+展示你能设计、运行和分析 A/B test，而不是只会事后看数据。
+JD 明确写了：
+Design, run, and analyse experiments (A/B tests) 
+所以这页非常关键。
+实验主题
+Agent Assist Triage Panel A/B Test 
+Product change
+Treatment 组 agent 看到一个新的 triage panel：
+recommended queue recommended priority ticket summary similar resolved tickets suggested first reply risk flags missing information checklist 
+Control 组使用现有工作流。
+Randomization design
+默认设计：
+ticket-level randomization stratified by issue_group, priority, and channel 
+但页面中要明确展示 contamination 风险：
+Risk: If the same agent handles both treatment and control tickets, they may learn from the tool and apply the knowledge to control tickets. Alternative: Agent-level or queue-level cluster randomization. 
+前端交互
+用户可以在网页上切换：
+ticket-level randomization agent-level randomization queue-level randomization 
+每种方案展示：
+statistical power operational complexity contamination risk implementation difficulty 
+Primary metric
+推荐：
+p75 resolution time for eligible tickets 
+原因：
+Support resolution time is usually right-skewed. p75 captures long-tail operational pain better than average. 
+统计分析中可以同时使用：
+log_resolution_minutes bootstrap CI for p75 difference 
+Secondary metrics
+median first response time routing correction rate agent handoff rate tickets solved per agent day proxy suggestion adoption rate manual edit distance for draft replies 
+Guardrail metrics
+CSAT low CSAT rate repeat contact proxy reopen proxy critical SLA breach escalation miss rate policy violation rate PII leakage rate 
+Success criteria
+网页中展示一个 experiment decision card：
+Ship if: - p75 resolution time decreases by at least 8% - low CSAT rate does not increase by more than 1 percentage point - repeat contact proxy does not increase - critical SLA breach does not increase - policy violation rate remains below threshold Iterate if: - efficiency improves but CSAT or repeat contact worsens Stop if: - no efficiency gain or guardrails degrade 
+前端图表
+Treatment vs control metric cards。
+Bootstrap confidence interval chart。
+Segment effect chart。
+Guardrail traffic-light table。
+Decision recommendation panel。
+JD 对应
+Lead Experimentation Product and operational decisions Maintain strong member focus Challenge decisions and hypotheses 
+Part 1 页面 10：Decision Memo
+页面目标
+把所有分析转成 stakeholder-friendly recommendation。
+页面形式：
+Interactive decision memo 
+左侧是章节导航，右侧是 memo 内容和图表引用。
+Memo 结构
+1. Business question 2. Key findings 3. Opportunity sizing 4. Recommended tooling changes 5. Experiment plan 6. Expected impact 7. Risks and guardrails 8. Data limitations 9. Next steps 
+推荐结论模板
+Recommendation 1: Prioritize support tooling for high-volume and high-delay issue groups, especially marketplace-equivalent Shipping / Delivery, Payment / Refund, and Returns / Disputes. Why: These segments contribute disproportionately to total resolution hours and low CSAT risk. Product action: Build an Agent Assist Triage Panel with queue recommendation, priority signal, similar ticket retrieval, and first-reply suggestion. Experiment: Run a stratified A/B test with p75 resolution time as the primary metric and CSAT, repeat contact, critical SLA breach, and policy violation as guardrails. Recommendation 2: Use confidence-based routing rather than full automation. Why: Routing recommendations are useful for high-confidence cases, but payment, refund, account access, and high-value disputes require human review. Recommendation 3: Use LLMs for agent assist and quality intelligence first, not autonomous member-facing resolution. Why: RAG and draft replies can reduce agent effort, but high-risk workflows require source grounding, policy checks, and human approval. 
+六、第二部分：LLM Customer Agent Solution 前端扩展
+第二部分要体现 2024 年以后流行的 customer support AI agent / copilot 趋势，但要控制范围，保持实际可行。
+Zendesk 的 AI customer service 产品方向包括 AI agents、copilot、automation 和 QA；Google Cloud Agent Assist 的 Smart Reply 文档也强调基于自有 conversation data 为 human agent 提供 suggested responses；OpenAI 的 customer service agents demo 则采用 Python backend 加 Next.js UI 展示 agent orchestration 和 chat interface。
+因此，这部分建议做成：
+Human-in-the-loop Agent Copilot 
+而不是：
+Fully autonomous customer support bot 
+这更贴 Vinted Support Agent Tooling 岗位。
+Part 2 页面 1：Agent Copilot Demo
+页面目标
+模拟客服 agent 的工作台，让面试官看到这个工具如何帮助 agent 处理 ticket。
+页面布局
+左侧： Ticket inbox 中间： Selected ticket details - member message - detected issue group - detected priority - historical context - risk flags 右侧： Agent Assist Panel - summary - recommended queue - recommended priority - similar resolved tickets - retrieved policy snippets - suggested reply - quality checks 
+输入数据
+使用：
+Tobi-Bueck ticket subject / body / answer。
+Bitext instruction / response / intent / category。
+自己整理的 marketplace policy snippets。
+Bitext 数据尤其适合，因为它包含 account、delivery、order、payment、refund、shipping address 等 customer service intents，非常接近 marketplace support 场景。
+Copilot 输出结构
+每个 ticket 点击后，右侧生成：
+Ticket summary: Member is asking about a refund after a delayed delivery. Detected issue: Refund / Delivery dispute Risk level: High Why high risk: Payment/refund-related issue. Requires policy-grounded answer and human approval. Recommended action: Ask for order status and delivery confirmation before promising refund. Relevant sources: 1. Refund policy snippet 2. Delivery dispute handling snippet 3. Similar resolved ticket Draft reply: Editable response for the agent. Quality checks: - Grounded in retrieved source: pass - No unsupported refund promise: pass - No PII leakage: pass - Requires human approval: yes 
+关键原则
+这页不要让 AI 直接给 member 发消息。应该设计成：
+AI suggests Agent reviews Agent edits Agent sends System logs outcome 
+这和真实客服系统更一致。
+Part 2 页面 2：PII Masking & Safety Layer
+页面目标
+展示你理解客服数据中的隐私风险。
+处理内容
+对以下内容做 masking：
+email phone number order number invoice number tracking number address-like text payment reference member name 
+示例
+原始文本：
+My order 123456 was delivered to 12 Green Street. Please call me at +44... 
+处理后：
+My order [ORDER_ID] was delivered to [ADDRESS]. Please call me at [PHONE]. 
+页面展示
+Before / after text comparison。
+Masked entity count。
+PII leakage test results。
+Safety checklist。
+指标
+pii_detected_count pii_masking_coverage_on_sample pii_leakage_rate_in_draft_reply unsafe_action_block_rate 
+为什么贴 JD
+JD 提到：
+privacy maintainable analytical workflows member experience secure and reliable workflows 
+客服 AI 如果不处理隐私问题，会显得很不成熟。
+Part 2 页面 3：Intent & Risk Classifier
+页面目标
+将 AI agent solution 与 Decision Science 连接起来。
+不是只展示一个聊天框，而是展示：
+系统如何判断 ticket 应该进入哪个 queue、是否高风险、是否允许自动草拟回复。 
+输入
+ticket subject ticket body language tags 
+输出
+intent issue_group risk_level needs_human_review recommended_queue confidence 
+模型策略
+第一版：
+TF-IDF + Logistic Regression 
+第二版可选：
+LLM classification with strict JSON schema 
+但默认展示第一版，因为更稳定、更容易评估。
+风险规则
+Payment / Refund → human review Account access → human review High-value item / verification → human review Fraud / safety keywords → human review Low-confidence prediction → human review Low-risk FAQ → draft allowed 
+指标
+intent_macro_f1 queue_accuracy critical_recall false_safe_rate abstain_rate coverage_rate 
+最重要的是：
+false_safe_rate 
+即高风险 ticket 被错误标记为 safe 的比例。
+前端展示
+Intent distribution。
+Risk level distribution。
+Critical recall card。
+False-safe examples。
+Threshold slider。
+Part 2 页面 4：RAG Source Retrieval
+页面目标
+展示 copilot 生成回复不是凭空生成，而是基于已批准知识源。
+Knowledge base
+approved_policy_snippets.json similar_resolved_tickets.json bitext_reference_answers.json 
+RAG 流程
+Ticket text → PII masking → embedding / lexical retrieval → retrieve top-k sources → source ranking → draft generation → groundedness check → agent review 
+展示版可以先用：
+TF-IDF cosine similarity 
+而不是必须上向量数据库。这样更轻量、更可部署。
+指标
+retrieval_recall_at_3 retrieval_mrr source_coverage_rate no_source_found_rate grounded_answer_rate unsupported_claim_rate 
+前端展示
+Top retrieved sources。
+Similarity score。
+Source snippets。
+Which sentence in draft is supported by which source。
+“No confident source found” fallback。
+Fallback 规则
+if top_source_score < threshold: do not generate final draft show: "No reliable source found. Escalate or ask for more information." 
+这个规则非常实用，能体现你不是盲目信任 LLM。
+Part 2 页面 5：Draft Reply Editor
+页面目标
+模拟 agent 如何使用 AI 草稿，而不是完全自动化。
+页面组件
+Draft response Editable text area Source citations Quality checklist Risk warning Send disabled until checks pass 
+Quality checks
+contains_required_next_step does_not_make_refund_promise_without_source does_not_request_sensitive_payment_info mentions escalation when high risk uses appropriate tone no PII leakage grounded in retrieved source 
+交互设计
+按钮：
+Accept draft Edit draft Reject draft Escalate ticket Need more information 
+记录事件：
+draft_accepted draft_edited draft_rejected manual_edit_distance agent_feedback_score escalation_clicked 
+指标
+suggestion_acceptance_rate average_edit_distance draft_rejection_rate policy_warning_rate human_approval_rate 
+这些指标可以进入第一部分的 Experiment Lab。
+Part 2 页面 6：Quality Monitor
+页面目标
+对应 JD 中这段非常关键的业务需求：
+understand the quality of member-support interactions: what went well, what went wrong, where failures happened, how tooling or workflows can improve outcomes. 
+质量标签
+每条回复打标签：
+correctness groundedness clarity empathy actionability policy_compliance missing_information unresolved_risk needs_escalation 
+评分来源
+规则检查。
+LLM judge。
+人工抽样 review。
+页面指标
+quality_score_avg policy_violation_rate unsupported_claim_rate missing_escalation_rate low_quality_reply_rate human_llm_agreement_rate quality_issue_by_issue_group 
+前端图表
+Quality score trend。
+Quality issue breakdown。
+Policy violation examples。
+Issue group × quality failure heatmap。
+Human review queue。
+重点说明
+LLM judge 不应被当作最终真相。页面中要写：
+LLM evaluation is used as a scalable QA signal. Final calibration should rely on human-reviewed samples. 
+这会显得非常成熟。
+Part 2 页面 7：AI Rollout Experiment
+页面目标
+把 LLM copilot 和 A/B testing 连接起来。
+实验设计
+Control：
+Agent uses existing support interface. 
+Treatment：
+Agent sees AI-generated ticket summary, retrieved sources, suggested queue, suggested priority, and editable draft reply. 
+Primary metric
+first_response_time 
+因为 AI summary / draft reply 最直接影响初次响应速度。
+Secondary metrics
+resolution_time agent_edit_distance suggestion_acceptance_rate tickets_solved_per_agent_day_proxy routing_correction_rate 
+Guardrails
+CSAT repeat_contact_proxy policy_violation_rate unsupported_claim_rate critical_escalation_miss_rate PII_leakage_rate 
+Success criteria
+Ship if: - first response time decreases by at least 10% - CSAT does not decrease - repeat contact does not increase - critical escalation recall remains above 95% - unsupported claim rate remains below threshold 
+前端展示
+页面做成一个 AI rollout decision simulator：
+用户可以调整：
+expected time saving adoption rate quality risk traffic allocation minimum detectable effect 
+页面输出：
+Recommended rollout decision: Shadow mode → limited pilot → A/B test → gradual rollout 
+七、前端网页完整页面清单
+最终网页建议包括 11 个页面。
+1. Landing Page 项目介绍 业务背景、项目结构、JD 匹配
+2. Metric Framework 指标体系 KPI、KR、metric dictionary
+3. Executive Overview 健康度 dashboard volume、resolution、CSAT、SLA
+4. Bottleneck Explorer 找机会点 issue group、channel、priority bottleneck
+5. Workflow Explorer agent workflow 分析 step duration、handoff、delay
+6. Regression Insights 统计解释 resolution time model、low CSAT model
+7. Causal Template 因果推断模板 DiD、parallel trends、assumption checklist
+8. Routing Model Lab 分流和优先级模型 confusion matrix、confidence threshold
+9. Experiment Lab A/B test 设计 primary metric、guardrails、decision rule
+10. Agent Copilot Demo LLM agent assist summary、RAG、draft、risk flags
+11. Quality Monitor support interaction quality groundedness、policy、QA failure signals
+12. Decision Memo 最终建议 stakeholder-ready recommendation
+  
+
+
+可以把 12 页合并为 8-9 页，但建议不要少于 8 页，否则展示不出完整能力。
+八、数据处理与前端数据文件设计
+前端不要直接读完整 raw CSV。应该用 Python / SQL 预处理后导出轻量 JSON。
+1. executive_kpis.json
+{ "total_tickets": 61765, "solved_rate": 0.87, "median_first_response_minutes": 34, "p75_resolution_minutes": 420, "csat_avg": 4.1, "low_csat_rate": 0.08, "repeat_contact_7d_proxy": 0.11, "critical_sla_breach_rate": 0.04 } 
+2. bottleneck_segments.json
+[ { "issue_group": "Shipping / Delivery", "channel": "Email", "priority": "High", "ticket_volume": 1240, "p75_resolution_minutes": 690, "low_csat_rate": 0.13, "excess_resolution_hours": 820, "tooling_opportunity": "Carrier checklist + similar ticket retrieval" } ] 
+3. regression_results.json
+[ { "model": "resolution_time", "feature": "Payment / Refund", "estimate": 0.31, "ci_low": 0.18, "ci_high": 0.44, "p_value": 0.002, "interpretation": "Associated with longer resolution time after controls." } ] 
+4. routing_model_eval.json
+{ "queue_model": { "accuracy": 0.82, "macro_f1": 0.76, "top_2_accuracy": 0.91, "coverage_at_80_confidence": 0.63, "accuracy_at_80_confidence": 0.92 }, "priority_model": { "accuracy": 0.79, "critical_recall": 0.94, "critical_false_negative_rate": 0.06, "false_safe_rate": 0.03 } } 
+5. agent_demo_tickets.json
+[ { "ticket_id": "demo_001", "member_message": "My parcel says delivered but I cannot find it. I want a refund.", "masked_message": "My parcel says delivered but I cannot find it. I want a refund.", "detected_intent": "delivery_dispute", "risk_level": "high", "recommended_queue": "Shipping / Delivery", "recommended_priority": "High", "summary": "Member reports a delivery dispute and requests a refund.", "draft_reply": "Thanks for reaching out. I understand the parcel is marked as delivered but you have not received it...", "quality_checks": { "grounded": true, "no_unsupported_refund_promise": true, "pii_safe": true, "human_review_required": true } } ] 
+九、实际实现步骤
+Week 1：搭建数据管道和前端骨架
+目的
+把项目从一开始就设计成网页作品，而不是 notebook 分析。
+任务
+创建 React + Vite + TypeScript 项目。
+创建 Python scripts 文件夹。
+下载或手动放入公开数据。
+设计统一 ticket schema。
+建立 DuckDB 数据库。
+导出第一版 executive_kpis.json。
+前端做 Landing Page 和 Executive Overview。
+产出
+frontend running locally data/supportiq.duckdb data/frontend/executive_kpis.json Landing Page Executive Overview page 
+Week 2：指标体系和 bottleneck dashboard
+目的
+展示最贴 JD 的 metrics framework 和 opportunity discovery。
+任务
+建立 metrics_dictionary.md。
+计算 volume、resolution、CSAT、repeat contact proxy、SLA breach proxy。
+构建 Bottleneck Explorer。
+构建 Workflow Explorer。
+加入 segment filter。
+产出
+Metric Framework page Bottleneck Explorer page Workflow Explorer page bottleneck_segments.json workflow_steps.json 
+Week 3：统计建模和 causal template
+目的
+覆盖 JD 中 statistical methods、regression、causal inference。
+任务
+构建 resolution time regression。
+构建 low CSAT logistic regression。
+导出 coefficient 和解释。
+构建 Difference-in-Differences template。
+在前端做 Regression Insights 和 Causal Template 页面。
+产出
+regression_results.json causal_template_results.json Regression Insights page Causal Template page 
+Week 4：Routing model 和 Experiment Lab
+目的
+展示 support agent tooling 的实际产品功能和实验验证能力。
+任务
+训练 queue classifier。
+训练 priority classifier。
+计算 confusion matrix、F1、critical recall、coverage vs accuracy。
+设计 Agent Assist Triage Panel A/B test。
+构建 Experiment Lab 前端页面。
+产出
+routing_model_eval.json confusion_matrix.json experiment_scenarios.json Routing Model Lab page Experiment Lab page 
+Week 5：LLM Copilot 扩展
+目的
+展示你了解 2024 年以后主流 customer support AI agent / copilot，但以实际可控方式落地。
+任务
+构建 PII masking。
+构建 intent / risk classifier。
+构建简单 RAG retrieval。
+生成 mock agent replies。
+构建 Agent Copilot Demo 页面。
+构建 Quality Monitor 页面。
+写 AI rollout experiment plan。
+产出
+agent_demo_tickets.json rag_sources.json llm_quality_eval.json Agent Copilot Demo page Quality Monitor page AI rollout experiment section 
+Week 6：打磨作品集和面试材料
+目的
+让项目适合投递和面试展示。
+任务
+写 README。
+写 decision memo。
+写 experiment plan。
+部署前端。
+录制 3-5 分钟 demo video。
+准备 8 分钟面试讲解稿。
+产出
+deployed website README.md decision_memo.md experiment_plan.md demo video resume bullet 
+十、JD 技能映射
+Decision Science / Data Analytics experience 完整客服指标体系、bottleneck analysis、decision memo
+Metrics and frameworks Metric Framework 页面、KR Builder、metrics dictionary
+Product performance tracking Executive dashboard、support health metrics
+A/B testing Experiment Lab、Agent Assist Triage Panel test
+Regression analysis Resolution time regression、low CSAT logistic regression
+Causal inference Difference-in-Differences template、assumption checklist
+SQL DuckDB SQL 数据清洗、指标聚合、experiment base table
+Python 数据清洗、建模、统计分析、JSON export
+BI tools React 前端 dashboard 替代传统 BI，更适合作品展示
+Cross-functional collaboration Decision Memo 面向 Product、Engineering、Ops、Analytics Engineering
+Support Agent Tooling Routing model、priority model、workflow bottleneck、agent copilot
+Quality of support interactions Quality Monitor、LLM QA rubric、policy violation signal
+Privacy PII masking、human review、no unsupported action
+Communication Stakeholder-ready web app 和 decision memo
+ 
+
+
+十一、前端网页的视觉与交互建议
+整体风格要像内部 analytics tool，不要像花哨 landing page。
+推荐布局
+左侧 sidebar: Overview Metrics Bottlenecks Workflow Regression Routing Experiment Agent Copilot Quality Decision Memo 顶部: Global filters 主区域: Charts + insights + recommendations 右侧: Context panel / selected segment explanation 
+推荐组件
+KPI cards Segment heatmap Pareto chart Waterfall chart Confusion matrix Forest plot Experiment result card Ticket drawer Agent assist panel Quality checklist Decision memo card 
+面试展示时最重要的交互
+在 Bottleneck Explorer 中点击一个高风险 segment。
+页面自动显示这个 segment 的 volume、p75 resolution、low CSAT 和 tooling recommendation。
+跳到 Routing Model Lab，展示该 segment 是否可以被模型可靠识别。
+跳到 Experiment Lab，展示如何验证这个 tooling idea。
+跳到 Agent Copilot Demo，展示 agent 实际如何使用 summary、RAG source、draft reply。
+跳到 Quality Monitor，展示上线后如何监控质量风险。
+这个展示路径很像真实 product decision process。
+十二、最终 README 摘要可以这样写
+
+
+SupportIQ Web is a front-end analytics and agent-assist case study for support agent tooling in a marketplace support domain.
+
+The project uses public customer support datasets to simulate how a Decision Scientist would help a cross-functional Help Experience team improve support efficiency and member experience.
+
+The project includes:
+- A metric framework for support efficiency, quality, risk, and tooling adoption
+- A React-based BI dashboard for support health monitoring
+- Bottleneck and workflow analysis using SQL and Python
+- Regression models for resolution time and low CSAT risk
+- A causal inference template for future tooling rollouts
+- Routing and priority recommendation models
+- An A/B test design lab for agent tooling experiments
+- A human-in-the-loop LLM copilot demo with RAG, PII masking, quality checks, and escalation rules
+
+The final deliverable is a deployed web application, not a notebook.
+models
+- An A/B test design lab for agent tooling experiments
+- A human-in-the-loop LLM copilot demo with RAG, PII masking, quality checks, and escalation rules
+
+The final deliverable is a deployed web application, not a notebook.
+
+十三、项目中需要避免的点
+不要做成纯 chatbot demo。这个岗位是 Decision Scientist，不是 chatbot engineer。
+不要只展示模型 accuracy。要展示业务指标、guardrails、实验设计和决策建议。
+不要只看 average resolution time。客服数据通常长尾明显，要看 p75 / p90。
+不要在前端暴露 LLM API key。展示版默认用 mock mode 或 serverless API。
+不要把所有内容塞进一个 dashboard。要按 stakehold决策流程组织页面。
+不要用 notebook 作为最终结果。所有结果应通过网页demo展示
+
