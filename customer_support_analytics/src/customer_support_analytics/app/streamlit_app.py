@@ -35,22 +35,29 @@ st.set_page_config(
 # Load data from CSV files
 @st.cache_data
 def load_csv_data():
-    data = {
-        'daily_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'daily_metrics.csv'),
-        'issue_type_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'issue_type_metrics.csv'),
-        'agent_performance': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'agent_performance.csv'),
-        'priority_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'priority_metrics.csv'),
-        'channel_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'channel_metrics.csv'),
-        'tickets': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'tickets_cleaned.csv')
-    }
-    # Convert date columns
-    if 'created_date' in data['daily_metrics'].columns:
-        data['daily_metrics']['created_date'] = pd.to_datetime(data['daily_metrics']['created_date'])
-    if 'created_date' in data['tickets'].columns:
-        data['tickets']['created_date'] = pd.to_datetime(data['tickets']['created_date'])
-    if 'ticket_created_at' in data['tickets'].columns:
-        data['tickets']['ticket_created_at'] = pd.to_datetime(data['tickets']['ticket_created_at'])
-    return data
+    try:
+        data = {
+            'daily_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'daily_metrics.csv'),
+            'issue_type_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'issue_type_metrics.csv'),
+            'agent_performance': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'agent_performance.csv'),
+            'priority_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'priority_metrics.csv'),
+            'channel_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'channel_metrics.csv'),
+            'tickets': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'tickets_cleaned.csv')
+        }
+        # Convert date columns
+        if 'created_date' in data['daily_metrics'].columns:
+            data['daily_metrics']['created_date'] = pd.to_datetime(data['daily_metrics']['created_date'])
+        if 'created_date' in data['tickets'].columns:
+            data['tickets']['created_date'] = pd.to_datetime(data['tickets']['created_date'])
+        if 'ticket_created_at' in data['tickets'].columns:
+            data['tickets']['ticket_created_at'] = pd.to_datetime(data['tickets']['ticket_created_at'])
+        return data
+    except FileNotFoundError as exc:
+        st.error(f"数据文件未找到: {exc}. 请先运行数据管道 (python main.py 不使用 --launch-only), 或确认已生成示例数据.")
+        st.stop()
+    except Exception as exc:
+        st.error(f"加载数据时发生错误: {exc}")
+        st.stop()
 
 data = load_csv_data()
 
