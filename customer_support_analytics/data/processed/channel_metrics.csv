@@ -1,0 +1,5 @@
+channel,total_tickets,avg_first_response_min,avg_resolution_min,avg_csat
+Email,2143,1.0,86.57,2.99
+Phone,2132,1.0,73.78,2.98
+Social media,2121,1.0,84.82,2.99
+Chat,2073,1.0,83.94,3.03

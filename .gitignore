@@ -7,13 +7,10 @@ __pycache__/
 *.so
 
 # Data files
-data/
-*.csv
 *.xlsx
 *.xls
 *.json
 *.parquet
-*.pkl
 *.pickle
 *.h5
 *.hdf5
