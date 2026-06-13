@@ -114,18 +114,23 @@ dmypy.json
 *.swo
 *~
 
-# Data files (keep structure, ignore contents)
+# Data files (keep structure, ignore contents) - but allow CSV files
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/*.csv
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/*.csv
 data/experiments/*
 !data/experiments/.gitkeep
+!data/experiments/*.csv
 
-# Models
-models/*.pkl
+# Models - allow pkl files
 models/*.joblib
 *.mlmodel
+
+# Trained models directory (allow all)
+!trained_model/*.pkl
 
 # OS files
 .DS_Store

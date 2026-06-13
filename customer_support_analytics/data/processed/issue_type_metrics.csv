@@ -1,0 +1,4 @@
+issue_type,total_tickets,avg_first_response_min,avg_resolution_min,avg_csat,sla_breach_rate,escalation_rate
+Other,5027,1.0,82.68,3.0,0.88,18.46
+Technical,1747,1.0,83.99,2.99,0.97,17.34
+Returns,1695,1.0,79.27,3.01,1.06,18.29
