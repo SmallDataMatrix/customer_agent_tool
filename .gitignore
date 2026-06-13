@@ -19,6 +19,7 @@ data/
 *.hdf5
 *.feather
 *.txt
+!temp/jd.txt
 *.log
 
 # Distribution / packaging

@@ -1,0 +1,10 @@
+level: INFO
+format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+  file:
+    class: logging.FileHandler
+    filename: logs/app.log
+    level: DEBUG

@@ -1,0 +1,59 @@
+About the job
+
+Brief Info About Vinted
+
+Our mission is to make second-hand the first choice, and we're looking for people who want to help us get there. Every day, we work together to help our members buy and sell pre-loved clothing and lifestyle items, giving each piece a second life – or even a third.
+
+The Vinted Group is made up of three business units that support this mission:
+
+Vinted Marketplace is Europe’s leading platform for second-hand fashion and a go-to destination for all kinds of pre-loved items, with a growing range of categories. Our platform connects millions of members across 20+ markets, helping great items find a new life.
+
+Vinted Go enhances the shipping experience with a vast network of over 500,000 pick-up and drop-off points, partnering with more than 60 carriers across Europe, with added services like item verification for peace of mind on high-value pieces.
+
+Vinted Pay is the newest part of the Vinted Group, dedicated to bringing secure, reliable payments to buyers and sellers across Europe. Seamlessly integrated into the Vinted app, it helps keep every transaction safe, efficient, and easy for our members.
+
+Founded in 2008 in Lithuania, Vinted began as a way for friends to find new homes for clothes they no longer needed. In 2019, we became Lithuania's first unicorn! Today, our headquarters remain in Vilnius, and we've grown with offices across Europe, supported by a team of over 2,000 people.
+
+Information about the position
+
+We are looking for a Decision Scientist to join the Support Agent Tooling team within the Help Experience domain. This is a cross-functional team building and improving the systems, workflows, and analytical foundations that help support agents resolve member issues efficiently while maintaining a high-quality member experience.
+
+This role is for someone who can independently own well-defined analyses from start to finish, contribute to product and operational decisions, and work closely with Product, Engineering, Operations, Analytics Engineering, and other Decision Scientists. The person should be comfortable turning business questions into structured analysis, interpreting results, and communicating clear recommendations to stakeholders.
+
+Why this role matters
+
+Support Agent Tooling directly affects both member experience and support efficiency. Better tooling can help agents resolve issues faster, reduce repeat contacts, improve consistency, and surface better feedback for product and operations teams.
+
+We are building scalable ways to understand the quality of member-support interactions: what went well, what went wrong, where failures happened, and how tooling or workflows can improve outcomes. This person would help make those signals reliable, understandable, and useful for decision-making.
+
+In this position, you’ll
+
+Enable Data-Driven Decisions: Develop and maintain relevant metrics and frameworks to track product performance, and continually explore opportunities within prioritised areas to communicate actionable analytical insights.
+
+Lead Experimentation: Design, run, and analyse experiments (A/B tests) to validate the value and business impact of product changes and tooling enhancements.
+
+Partner and Strategise: Collaborate cross-functionally to drive the process of setting team Key Results (KRs) and targets. You will challenge decisions and hypotheses to optimise our impact and maintain a strong member focus.
+
+Collaborate across teams, proactively aligning when work touches other areas of Help Experience, support operations, or data infrastructure.
+
+Build maintainable analytical workflows using SQL and Python, following good standards for code quality, reproducibility, documentation, and privacy.
+
+About You
+
+Proven experience in a Decision Science or Data Analytics role
+
+Good analytical thinking and problem-solving skills, with the ability to balance depth of analysis with business impact
+
+Strong knowledge of statistical methods, including experience running A/B tests, regression analysis, causal inference, and other inferential techniques.
+
+Experience with SQL and Python
+
+Experience with BI tools (e.g., Looker, Tableau, Power BI)
+
+A proactive individual who thrives in a fast-paced, constantly evolving business environment
+
+Highly results-oriented and comfortable with iterative processes
+
+Strong communicator who can convincingly present results to both technical and non-technical audiences
+
+Fluent in English, both written and spoken
