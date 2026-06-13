@@ -10,8 +10,8 @@ Run with: streamlit run app.py
 import sys
 from pathlib import Path
 
-# Add parent directory to path for scripts imports
-sys.path.insert(0, str(Path(__file__).parent))
+# Add parent directories to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 import pandas as pd
@@ -20,6 +20,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime, timedelta
+
+# Import path manager for correct file paths
+from customer_support_analytics.core.path import path_manager
 
 # Set page config
 st.set_page_config(
@@ -33,12 +36,12 @@ st.set_page_config(
 @st.cache_data
 def load_csv_data():
     data = {
-        'daily_metrics': pd.read_csv('data/processed/daily_metrics.csv'),
-        'issue_type_metrics': pd.read_csv('data/processed/issue_type_metrics.csv'),
-        'agent_performance': pd.read_csv('data/processed/agent_performance.csv'),
-        'priority_metrics': pd.read_csv('data/processed/priority_metrics.csv'),
-        'channel_metrics': pd.read_csv('data/processed/channel_metrics.csv'),
-        'tickets': pd.read_csv('data/processed/tickets_cleaned.csv')
+        'daily_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'daily_metrics.csv'),
+        'issue_type_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'issue_type_metrics.csv'),
+        'agent_performance': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'agent_performance.csv'),
+        'priority_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'priority_metrics.csv'),
+        'channel_metrics': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'channel_metrics.csv'),
+        'tickets': pd.read_csv(path_manager.PROCESSED_DATA_DIR / 'tickets_cleaned.csv')
     }
     # Convert date columns
     if 'created_date' in data['daily_metrics'].columns:
