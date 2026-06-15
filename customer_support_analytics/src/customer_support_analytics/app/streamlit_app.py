@@ -1429,12 +1429,8 @@ elif page == "Time Series Forecasting":
     """)
     
     # Import the forecasting module
-    import sys
-    from pathlib import Path
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    
     try:
-        from scripts.time_series_forecasting import TimeSeriesForecaster, forecast_metrics
+        from customer_support_analytics.scripts.analytics.time_series_forecasting import TimeSeriesForecaster, forecast_metrics
         forecaster_available = True
     except ImportError as e:
         st.warning(f"Forecasting module not available: {e}")
@@ -1619,8 +1615,8 @@ elif page == "CATE Analysis":
 
     # Import CATE module
     try:
-        from scripts.causal_inference import CausalInferenceAnalyzer
-        from scripts.cate_meta_learners import MetaLearnerCATE
+        from customer_support_analytics.scripts.analytics.causal_inference import CausalInferenceAnalyzer
+        from customer_support_analytics.scripts.analytics.cate_meta_learners import MetaLearnerCATE
         cate_available = True
     except ImportError as e:
         st.warning(f"CATE module not available: {e}")
